@@ -1,0 +1,23 @@
+name: Deploy Workers
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: # 手動で実行ボタンを押せるようにする設定
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # デプロイ対象のフォルダ名
+        api: [hello, summarize, translate]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apis/${{ matrix.api }}

@@ -1,0 +1,49 @@
+{
+  "routes": [
+    {
+      "path": "/hello",
+      "methods": ["GET"],
+      "handler": {
+        "export": "urlForwardHandler",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "forwardTo": "https://nexus-hello-api.workers.dev/hello"
+        }
+      },
+      "policies": {
+        "inbound": [],
+        "outbound": []
+      }
+    },
+    {
+      "path": "/summarize",
+      "methods": ["POST"],
+      "handler": {
+        "export": "urlForwardHandler",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "forwardTo": "https://nexus-summarize-api.workers.dev/summarize"
+        }
+      },
+      "policies": {
+        "inbound": [],
+        "outbound": []
+      }
+    },
+    {
+      "path": "/translate",
+      "methods": ["POST"],
+      "handler": {
+        "export": "urlForwardHandler",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "forwardTo": "https://nexus-translate-api.workers.dev/translate"
+        }
+      },
+      "policies": {
+        "inbound": [],
+        "outbound": []
+      }
+    }
+  ]
+}
