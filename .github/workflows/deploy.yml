@@ -21,3 +21,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apis/${{ matrix.api }}
+          secrets: |
+            ZUPLO_SHARED_SECRET
+        env:
+          ZUPLO_SHARED_SECRET: ${{ secrets.ZUPLO_SHARED_SECRET }}
