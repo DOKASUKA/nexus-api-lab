@@ -1,84 +1,42 @@
-# Nexus API Lab Specification
+# Nexus API Lab Specification (v2.0 - Main Branch)
 
-Nexus API Lab is a platform for hosting multiple APIs using a monorepo architecture.
+Nexus API Lab is a platform for hosting multiple APIs using a monorepo architecture, managed via the `main` branch.
 
 ## Tech Stack
-
-* Cloudflare Workers
-* Wrangler
-* Zuplo API Gateway
-* OpenAPI 3.0
-* GitHub Actions
+* Cloudflare Workers (Runtime)
+* Wrangler (CLI for Deployment)
+* Zuplo API Gateway (Edge Gateway & Dev Portal)
+* OpenAPI 3.0 (API Definition)
+* GitHub Actions (CI/CD)
 * TypeScript
 
 ## Monorepo Structure
-
+The project must follow this directory structure:
 /apis
-/hello
-/summarize
-/translate
-
+  /hello       (Worker: nexus-hello-api)
+  /summarize   (Worker: nexus-summarize-api)
+  /translate   (Worker: nexus-translate-api)
 /gateway
-/zuplo
+  /zuplo       (Zuplo Project Files)
+/openapi       (API Specs: hello.yaml, summarize.yaml, translate.yaml)
+/sdk           (Generated SDKs)
+/.github/workflows (CI/CD Pipelines)
 
-/openapi
+## CI/CD Requirements (GitHub Actions)
+* **Trigger**: MUST trigger only on push to the `main` branch.
+* **Matrix Deployment**: Use a matrix to deploy `hello`, `summarize`, and `translate` independently.
+* **Working Directory**: Wrangler commands must run within each API's subdirectory (`apis/<name>`).
+* **Secrets**: Load the following from GitHub Secrets:
+  - `CLOUDFLARE_API_TOKEN`
+  - `CLOUDFLARE_ACCOUNT_ID`
+  - `ZUPLO_SHARED_SECRET` (For Worker protection)
 
-/sdk
+## Security & Protection
+1. **Shared Secret Verification**:
+   - Each Worker MUST verify the `X-Nexus-Shared-Secret` header.
+   - If the header does not match `env.ZUPLO_SHARED_SECRET`, return `401 Unauthorized`.
+2. **Direct Access Guard**: Prohibit direct access to `*.workers.dev` without the secret.
 
-/.github/workflows
-
-Each API must run as an independent Cloudflare Worker.
-
-Worker names:
-
-* nexus-hello-api
-* nexus-summarize-api
-* nexus-translate-api
-
-## API Requirements
-
-Workers must return JSON responses.
-
-Example:
-
-GET /hello
-
-Response:
-
-{
-"message": "Hello from Nexus API Lab"
-}
-
-## OpenAPI
-
-Each API must have a specification:
-
-openapi/hello.yaml
-openapi/summarize.yaml
-openapi/translate.yaml
-
-## CI/CD
-
-GitHub Actions must:
-
-* trigger on push to main
-* deploy workers using wrangler
-* use matrix deployment
-
-Workers:
-
-hello
-summarize
-translate
-
-Secrets must be loaded from GitHub Secrets.
-
-Required secret:
-
-CF_API_TOKEN
-
-## Security
-
-Never store secrets in the repository.
-
-Use environment variables only.
+## Zuplo Integration
+- The `gateway/zuplo` directory must contain a valid Zuplo project (`zuplo.jsonc`, `package.json`).
+- Environment: Linked to the `main` branch for Production.
