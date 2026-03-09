@@ -10,6 +10,29 @@ We specialize in providing "Infrastructure as a Service" (IaaS) through lightwei
 - **Workflow Automation Tools**: Custom-built endpoints to streamline enterprise repetitive tasks.
 - **Developer Utilities**: Essential tools for modern software development and CI/CD pipelines.
 
+## Zuplo Gateway
+
+The Zuplo API Gateway project root is located at:
+
+```
+gateway/zuplo-gateway/
+```
+
+When importing this repository into the Zuplo Dashboard, set **Project Root** to `gateway/zuplo-gateway`.
+
+| Directory | Purpose |
+|-----------|---------|
+| `gateway/zuplo-gateway/config/routes.oas.json` | Route definitions (OpenAPI 3.1 + Zuplo extensions) |
+| `gateway/zuplo-gateway/openapi/` | Per-API OpenAPI specs |
+| `gateway/zuplo-gateway/modules/` | Custom Zuplo modules |
+| `gateway/zuplo-gateway/schemas/` | JSON Schemas |
+
+**Required environment variables in Zuplo Dashboard:**
+- `HELLO_API_URL` — Cloudflare Worker URL for nexus-hello-api
+- `SUMMARIZE_API_URL` — Cloudflare Worker URL for nexus-summarize-api
+- `TRANSLATE_API_URL` — Cloudflare Worker URL for nexus-translate-api
+- `ZUPLO_SHARED_SECRET` — Shared secret injected as `X-Nexus-Shared-Secret` header
+
 ## 🛠 Tech Stack
 To ensure 99.9% availability and global low-latency, we utilize industry-leading technologies:
 - **Edge Computing**: Cloudflare Workers

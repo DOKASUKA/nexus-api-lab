@@ -1,0 +1,58 @@
+openapi: "3.0.3"
+info:
+  title: Nexus Summarize API
+  version: "1.0.0"
+  description: Text summarization endpoint hosted on Cloudflare Workers.
+servers:
+  - url: https://nexus-summarize-api.workers.dev
+paths:
+  /summarize:
+    post:
+      operationId: summarizeText
+      summary: Summarizes the provided text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  example: This is the text that will be summarized by the API.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - summary
+                properties:
+                  summary:
+                    type: string
+                    example: This is the text that will be summarized...
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
