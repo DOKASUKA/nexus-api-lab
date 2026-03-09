@@ -2,8 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Nexus API Gateway",
-    "version": "1.0.0",
-    "description": "Unified API Gateway for Nexus API Lab (hello, summarize, translate)"
+    "version": "1.0.0"
   },
   "paths": {
     "/hello": {
@@ -12,43 +11,24 @@
       },
       "get": {
         "summary": "Returns a hello message",
-        "description": "Simple hello endpoint proxied to nexus-hello-api Cloudflare Worker.",
         "operationId": "getHello",
         "x-zuplo-route": {
           "corsPolicy": "none",
           "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
+            "export": "default",
+            "module": "$import(./modules/upstreamProxy)",
             "options": {
-              "forwardTo": "${env.HELLO_API_URL}/hello",
-              "followRedirects": false
+              "upstreamUrl": "${env.HELLO_API_URL}/hello"
             }
           },
           "policies": {
-            "inbound": ["shared-secret-inbound"],
+            "inbound": [],
             "outbound": []
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Hello from Nexus API Lab"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
+          "200": { "description": "OK" },
+          "401": { "description": "Unauthorized" }
         }
       }
     },
@@ -58,20 +38,18 @@
       },
       "post": {
         "summary": "Summarizes the provided text",
-        "description": "Text summarization endpoint proxied to nexus-summarize-api Cloudflare Worker.",
         "operationId": "summarizeText",
         "x-zuplo-route": {
           "corsPolicy": "none",
           "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
+            "export": "default",
+            "module": "$import(./modules/upstreamProxy)",
             "options": {
-              "forwardTo": "${env.SUMMARIZE_API_URL}/summarize",
-              "followRedirects": false
+              "upstreamUrl": "${env.SUMMARIZE_API_URL}/summarize"
             }
           },
           "policies": {
-            "inbound": ["shared-secret-inbound"],
+            "inbound": [],
             "outbound": []
           }
         },
@@ -79,35 +57,12 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["text"],
-                "properties": {
-                  "text": {
-                    "type": "string",
-                    "example": "This is the text that will be summarized by the API."
-                  }
-                }
-              }
+              "schema": { "type": "object" }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "summary": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
+          "200": { "description": "OK" },
           "400": { "description": "Bad request" },
           "401": { "description": "Unauthorized" },
           "405": { "description": "Method not allowed" }
@@ -120,20 +75,18 @@
       },
       "post": {
         "summary": "Translates text to the specified language",
-        "description": "Translation endpoint proxied to nexus-translate-api Cloudflare Worker.",
         "operationId": "translateText",
         "x-zuplo-route": {
           "corsPolicy": "none",
           "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
+            "export": "default",
+            "module": "$import(./modules/upstreamProxy)",
             "options": {
-              "forwardTo": "${env.TRANSLATE_API_URL}/translate",
-              "followRedirects": false
+              "upstreamUrl": "${env.TRANSLATE_API_URL}/translate"
             }
           },
           "policies": {
-            "inbound": ["shared-secret-inbound"],
+            "inbound": [],
             "outbound": []
           }
         },
@@ -141,38 +94,12 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["text", "target_language"],
-                "properties": {
-                  "text": {
-                    "type": "string",
-                    "example": "hello world"
-                  },
-                  "target_language": {
-                    "type": "string",
-                    "example": "ja"
-                  }
-                }
-              }
+              "schema": { "type": "object" }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "translated_text": { "type": "string" },
-                    "target_language": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
+          "200": { "description": "OK" },
           "400": { "description": "Bad request" },
           "401": { "description": "Unauthorized" },
           "405": { "description": "Method not allowed" }

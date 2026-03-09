@@ -1,0 +1,159 @@
+openapi: "3.1.0"
+info:
+  title: Nexus API Gateway
+  version: "1.0.0"
+  description: |
+    Unified API Gateway for Nexus API Lab.
+    All requests are proxied to Cloudflare Workers via the Zuplo edge gateway.
+servers:
+  - url: https://nexus-api-lab.zuplo.app
+    description: Production (Zuplo Edge)
+paths:
+  /hello:
+    get:
+      operationId: getHello
+      summary: Returns a hello message
+      description: Simple hello endpoint proxied to nexus-hello-api Cloudflare Worker.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /summarize:
+    post:
+      operationId: summarizeText
+      summary: Summarizes the provided text
+      description: Truncates input text to the first 20 words. Proxied to nexus-summarize-api Cloudflare Worker.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SummarizeRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SummarizeResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /translate:
+    post:
+      operationId: translateText
+      summary: Translates text to the specified language
+      description: Word-level translation to ja/es/fr. Proxied to nexus-translate-api Cloudflare Worker.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslateRequest"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslateResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    HelloResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Hello from Nexus API Lab
+    SummarizeRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          example: This is the text that will be summarized by the API.
+    SummarizeResponse:
+      type: object
+      required:
+        - summary
+      properties:
+        summary:
+          type: string
+          example: This is the text that will be summarized...
+    TranslateRequest:
+      type: object
+      required:
+        - text
+        - target_language
+      properties:
+        text:
+          type: string
+          example: hello world
+        target_language:
+          type: string
+          example: ja
+          description: "Supported: ja, es, fr"
+    TranslateResponse:
+      type: object
+      required:
+        - translated_text
+        - target_language
+      properties:
+        translated_text:
+          type: string
+          example: こんにちは 世界
+        target_language:
+          type: string
+          example: ja
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
