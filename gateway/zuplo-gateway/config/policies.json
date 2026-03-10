@@ -3,13 +3,9 @@
     {
       "name": "auth-workers",
       "policyType": "add-request-header",
-      "handler": {
-        "export": "AddRequestHeaderPolicy",
-        "module": "$import(@zuplo/runtime)",
-        "options": {
-          "header": "X-Shared-Secret",
-          "value": "${env.SHARED_SECRET_AUTH}"
-        }
+      "options": {
+        "header": "X-Shared-Secret",
+        "value": "${env.SHARED_SECRET_AUTH}"
       }
     }
   ]
