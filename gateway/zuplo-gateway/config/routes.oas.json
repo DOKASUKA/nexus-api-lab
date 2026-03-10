@@ -12,10 +12,10 @@
         "operationId": "getHello",
         "x-zuplo-route": {
           "handler": {
-            "export": "urlRewriteHandler",
+            "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "rewriteUri": "https://nexus-hello-api.dokasukadon.workers.dev/hello"
+              "url": "https://nexus-hello-api.dokasukadon.workers.dev/hello"
             }
           },
           "policies": {

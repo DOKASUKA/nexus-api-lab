@@ -1,4 +1,5 @@
 {
+  "name": "nexus-api-lab",
   "version": 1,
   "projectType": "managed-edge",
   "compatibilityDate": "2025-02-06"
