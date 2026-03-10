@@ -12,23 +12,16 @@
         "operationId": "getHello",
         "x-zuplo-route": {
           "handler": {
-            "module": "$import(@zuplo/runtime).urlForwardHandler",
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
             "options": {
-              "url": "https://nexus-hello-api.dokasukadon.workers.dev/hello"
+              "rewriteUri": "https://nexus-hello-api.dokasukadon.workers.dev/hello"
             }
           },
-          "policies": [
-            {
-              "name": "auth-workers",
-              "handler": {
-                "export": "RequestHeaderModifierPolicy",
-                "module": "$import(@zuplo/runtime)",
-                "options": {
-                  "set": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
-                }
-              }
-            }
-          ]
+          "policies": {
+            "inbound": ["auth-workers"],
+            "outbound": []
+          }
         },
         "responses": { "200": { "description": "OK" } }
       }
@@ -38,23 +31,16 @@
       "post": {
         "x-zuplo-route": {
           "handler": {
-            "module": "$import(@zuplo/runtime).urlForwardHandler",
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
             "options": {
-              "url": "https://nexus-summarize-api.dokasukadon.workers.dev/summarize"
+              "rewriteUri": "https://nexus-summarize-api.dokasukadon.workers.dev/summarize"
             }
           },
-          "policies": [
-            {
-              "name": "auth-workers",
-              "handler": {
-                "export": "RequestHeaderModifierPolicy",
-                "module": "$import(@zuplo/runtime)",
-                "options": {
-                  "set": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
-                }
-              }
-            }
-          ]
+          "policies": {
+            "inbound": ["auth-workers"],
+            "outbound": []
+          }
         },
         "responses": { "200": { "description": "OK" } }
       }
@@ -64,23 +50,16 @@
       "post": {
         "x-zuplo-route": {
           "handler": {
-            "module": "$import(@zuplo/runtime).urlForwardHandler",
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
             "options": {
-              "url": "https://nexus-translate-api.dokasukadon.workers.dev/translate"
+              "rewriteUri": "https://nexus-translate-api.dokasukadon.workers.dev/translate"
             }
           },
-          "policies": [
-            {
-              "name": "auth-workers",
-              "handler": {
-                "export": "RequestHeaderModifierPolicy",
-                "module": "$import(@zuplo/runtime)",
-                "options": {
-                  "set": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
-                }
-              }
-            }
-          ]
+          "policies": {
+            "inbound": ["auth-workers"],
+            "outbound": []
+          }
         },
         "responses": { "200": { "description": "OK" } }
       }
