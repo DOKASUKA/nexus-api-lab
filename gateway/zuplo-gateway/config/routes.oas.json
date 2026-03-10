@@ -6,104 +6,83 @@
   },
   "paths": {
     "/hello": {
-      "x-zuplo-path": {
-        "pathMode": "open-api"
-      },
+      "x-zuplo-path": { "pathMode": "open-api" },
       "get": {
         "summary": "Returns a hello message",
         "operationId": "getHello",
         "x-zuplo-route": {
-          "corsPolicy": "none",
           "handler": {
-            "export": "default",
-            "module": "$import(./modules/upstreamProxy)",
+            "module": "$import(@zuplo/runtime).urlForwardHandler",
             "options": {
-              "upstreamUrl": "${env.HELLO_API_URL}/hello"
+              "url": "https://nexus-hello-api.あなたのサブドメイン.workers.dev/hello"
             }
           },
-          "policies": {
-            "inbound": [],
-            "outbound": []
-          }
+          "policies": [
+            {
+              "name": "auth-workers",
+              "handler": {
+                "export": "RequestHeaderModifierPolicy",
+                "module": "$import(@zuplo/runtime)",
+                "options": {
+                  "add": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
+                }
+              }
+            }
+          ]
         },
-        "responses": {
-          "200": { "description": "OK" },
-          "401": { "description": "Unauthorized" }
-        }
+        "responses": { "200": { "description": "OK" } }
       }
     },
     "/summarize": {
-      "x-zuplo-path": {
-        "pathMode": "open-api"
-      },
+      "x-zuplo-path": { "pathMode": "open-api" },
       "post": {
-        "summary": "Summarizes the provided text",
-        "operationId": "summarizeText",
         "x-zuplo-route": {
-          "corsPolicy": "none",
           "handler": {
-            "export": "default",
-            "module": "$import(./modules/upstreamProxy)",
+            "module": "$import(@zuplo/runtime).urlForwardHandler",
             "options": {
-              "upstreamUrl": "${env.SUMMARIZE_API_URL}/summarize"
+              "url": "https://nexus-summarize-api.あなたのサブドメイン.workers.dev/summarize"
             }
           },
-          "policies": {
-            "inbound": [],
-            "outbound": []
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "type": "object" }
+          "policies": [
+            {
+              "name": "auth-workers",
+              "handler": {
+                "export": "RequestHeaderModifierPolicy",
+                "module": "$import(@zuplo/runtime)",
+                "options": {
+                  "add": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
+                }
+              }
             }
-          }
+          ]
         },
-        "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad request" },
-          "401": { "description": "Unauthorized" },
-          "405": { "description": "Method not allowed" }
-        }
+        "responses": { "200": { "description": "OK" } }
       }
     },
     "/translate": {
-      "x-zuplo-path": {
-        "pathMode": "open-api"
-      },
+      "x-zuplo-path": { "pathMode": "open-api" },
       "post": {
-        "summary": "Translates text to the specified language",
-        "operationId": "translateText",
         "x-zuplo-route": {
-          "corsPolicy": "none",
           "handler": {
-            "export": "default",
-            "module": "$import(./modules/upstreamProxy)",
+            "module": "$import(@zuplo/runtime).urlForwardHandler",
             "options": {
-              "upstreamUrl": "${env.TRANSLATE_API_URL}/translate"
+              "url": "https://nexus-translate-api.あなたのサブドメイン.workers.dev/translate"
             }
           },
-          "policies": {
-            "inbound": [],
-            "outbound": []
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "type": "object" }
+          "policies": [
+            {
+              "name": "auth-workers",
+              "handler": {
+                "export": "RequestHeaderModifierPolicy",
+                "module": "$import(@zuplo/runtime)",
+                "options": {
+                  "add": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
+                }
+              }
             }
-          }
+          ]
         },
-        "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad request" },
-          "401": { "description": "Unauthorized" },
-          "405": { "description": "Method not allowed" }
-        }
+        "responses": { "200": { "description": "OK" } }
       }
     }
   }
