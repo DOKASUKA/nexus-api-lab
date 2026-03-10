@@ -7,6 +7,7 @@ on:
     paths:
       - 'gateway/zuplo-gateway/**'
       - 'apis/**'
+      - '.github/workflows/deploy.yml' # ← これを追加！
 
 jobs:
   # 1. Zuplo Gateway のデプロイ
