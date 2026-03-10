@@ -14,7 +14,7 @@
           "handler": {
             "module": "$import(@zuplo/runtime).urlForwardHandler",
             "options": {
-              "url": "https://nexus-hello-api.あなたのサブドメイン.workers.dev/hello"
+              "url": "https://nexus-hello-api.dokasukadon.workers.dev/hello"
             }
           },
           "policies": [
@@ -24,7 +24,7 @@
                 "export": "RequestHeaderModifierPolicy",
                 "module": "$import(@zuplo/runtime)",
                 "options": {
-                  "add": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
+                  "set": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
                 }
               }
             }
@@ -40,7 +40,7 @@
           "handler": {
             "module": "$import(@zuplo/runtime).urlForwardHandler",
             "options": {
-              "url": "https://nexus-summarize-api.あなたのサブドメイン.workers.dev/summarize"
+              "url": "https://nexus-summarize-api.dokasukadon.workers.dev/summarize"
             }
           },
           "policies": [
@@ -50,7 +50,7 @@
                 "export": "RequestHeaderModifierPolicy",
                 "module": "$import(@zuplo/runtime)",
                 "options": {
-                  "add": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
+                  "set": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
                 }
               }
             }
@@ -66,7 +66,7 @@
           "handler": {
             "module": "$import(@zuplo/runtime).urlForwardHandler",
             "options": {
-              "url": "https://nexus-translate-api.あなたのサブドメイン.workers.dev/translate"
+              "url": "https://nexus-translate-api.dokasukadon.workers.dev/translate"
             }
           },
           "policies": [
@@ -76,7 +76,7 @@
                 "export": "RequestHeaderModifierPolicy",
                 "module": "$import(@zuplo/runtime)",
                 "options": {
-                  "add": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
+                  "set": { "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}" }
                 }
               }
             }
