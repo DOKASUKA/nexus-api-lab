@@ -5,24 +5,23 @@
     "tests/**/*"
   ],
   "exclude": [
-    "./node_modules",
-    "./dist"
+    "node_modules",
+    "dist"
   ],
   "compilerOptions": {
-    "module": 99,
-    "target": 9,
-    "moduleResolution": 100,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "lib": [
       "ESNext",
       "WebWorker",
       "Webworker.Iterable"
     ],
-    "preserveConstEnums": true,
-    "useUnknownInCatchVariables": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
     "esModuleInterop": true,
-    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
     "noEmit": true
   }
 }
