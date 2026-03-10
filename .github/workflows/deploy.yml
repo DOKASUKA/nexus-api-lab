@@ -28,8 +28,8 @@ jobs:
 
       - name: Deploy to Zuplo
         working-directory: gateway/zuplo-gateway
-        # プロジェクト名 "nexus-api-lab" を明示してデプロイ
-        run: npx zup deploy --project nexus-api-lab --api-key ${{ secrets.ZUPLO_API_KEY }}
+        # zup ではなく @zuplo/cli を明示的に指定して実行
+        run: npx @zuplo/cli deploy --project nexus-api-lab --api-key ${{ secrets.ZUPLO_API_KEY }}
 
   # 2. Cloudflare Workers のデプロイ (3つ同時に実行)
   deploy-workers:
