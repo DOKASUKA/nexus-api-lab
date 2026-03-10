@@ -12,8 +12,12 @@
         "operationId": "getHello",
         "x-zuplo-policies": ["auth-workers"],
         "x-zuplo-route": {
-          "upstream": {
-            "url": "https://nexus-hello-api.dokasukadon.workers.dev/hello"
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "https://nexus-hello-api.dokasukadon.workers.dev"
+            }
           }
         },
         "responses": { "200": { "description": "OK" } }
@@ -22,10 +26,16 @@
     "/summarize": {
       "x-zuplo-path": { "pathMode": "open-api" },
       "post": {
+        "summary": "Summarizes text",
+        "operationId": "postSummarize",
         "x-zuplo-policies": ["auth-workers"],
         "x-zuplo-route": {
-          "upstream": {
-            "url": "https://nexus-summarize-api.dokasukadon.workers.dev/summarize"
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "https://nexus-summarize-api.dokasukadon.workers.dev"
+            }
           }
         },
         "responses": { "200": { "description": "OK" } }
@@ -34,10 +44,16 @@
     "/translate": {
       "x-zuplo-path": { "pathMode": "open-api" },
       "post": {
+        "summary": "Translates text",
+        "operationId": "postTranslate",
         "x-zuplo-policies": ["auth-workers"],
         "x-zuplo-route": {
-          "upstream": {
-            "url": "https://nexus-translate-api.dokasukadon.workers.dev/translate"
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "https://nexus-translate-api.dokasukadon.workers.dev"
+            }
           }
         },
         "responses": { "200": { "description": "OK" } }
