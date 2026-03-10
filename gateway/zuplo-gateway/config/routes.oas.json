@@ -10,14 +10,10 @@
       "get": {
         "summary": "Returns a hello message",
         "operationId": "getHello",
-        "x-zuplo-policies": ["auth-workers"], 
+        "x-zuplo-policies": ["auth-workers"],
         "x-zuplo-route": {
-          "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "url": "https://nexus-hello-api.dokasukadon.workers.dev/hello"
-            }
+          "upstream": {
+            "url": "https://nexus-hello-api.dokasukadon.workers.dev/hello"
           }
         },
         "responses": { "200": { "description": "OK" } }
@@ -28,12 +24,8 @@
       "post": {
         "x-zuplo-policies": ["auth-workers"],
         "x-zuplo-route": {
-          "handler": {
-            "export": "urlRewriteHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "rewriteUri": "https://nexus-summarize-api.dokasukadon.workers.dev/summarize"
-            }
+          "upstream": {
+            "url": "https://nexus-summarize-api.dokasukadon.workers.dev/summarize"
           }
         },
         "responses": { "200": { "description": "OK" } }
@@ -44,12 +36,8 @@
       "post": {
         "x-zuplo-policies": ["auth-workers"],
         "x-zuplo-route": {
-          "handler": {
-            "export": "urlRewriteHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "rewriteUri": "https://nexus-translate-api.dokasukadon.workers.dev/translate"
-            }
+          "upstream": {
+            "url": "https://nexus-translate-api.dokasukadon.workers.dev/translate"
           }
         },
         "responses": { "200": { "description": "OK" } }
