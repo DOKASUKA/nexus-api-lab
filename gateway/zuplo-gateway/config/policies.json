@@ -8,7 +8,7 @@
         "module": "$import(@zuplo/runtime)",
         "options": {
           "headers": {
-            "X-Shared-Secret": "${env.SHARED_SECRET_AUTH}"
+            "X-Nexus-Shared-Secret": "${env.SHARED_SECRET_AUTH}"
           }
         }
       }
