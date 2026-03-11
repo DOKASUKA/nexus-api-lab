@@ -1,7 +1,19 @@
 {
   "name": "nexus-api-lab-gateway",
+  "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "zuplo dev",
+    "test": "zuplo test",
+    "docs": "zuplo docs"
+  },
   "dependencies": {
-    "@zuplo/runtime": "latest"
-  }
+    "zuplo": "^6.67.16"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "workspaces": [
+    "docs"
+  ]
 }

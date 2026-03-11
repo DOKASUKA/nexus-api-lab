@@ -1,7 +1,5 @@
 {
   "name": "nexus-api-lab",
   "private": true,
-  "dependencies": {
-    "@zuplo/runtime": "latest"
-  }
+  "dependencies": {}
 }
