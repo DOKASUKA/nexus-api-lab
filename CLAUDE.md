@@ -53,21 +53,6 @@ All Workers validate the `X-Nexus-Shared-Secret` header against `env.ZUPLO_SHARE
 
 Required secrets: `ZUPLO_API_KEY`, `CLOUDFLARE_API_TOKEN`.
 
-## Current Debugging Context
-
-**直近の障害:** デプロイ後のヘルスチェックが 249/250 回失敗し、タイムアウトする。
-
-**デプロイID:** `09341df8-d848-41c3-9e24-00143a7124cd`
-
-**最優先タスク:** 起動失敗の生ログを取得・解析すること。
-
-> **注意:** `@zuplo/cli` v6.x に `logs` コマンドは存在しない。ログは Zuplo ポータル (zuplo.com) の **Logs** タブからのみ取得可能。
-
-**疑われている原因:**
-- `SHARED_SECRET_AUTH` 環境変数の注入失敗（Zuplo ポータルで設定値が正しく反映されていない可能性）
-- Zuplo ポータルの **Working Copy** が本番デプロイに干渉している可能性
-
----
 
 ## TypeScript
 
