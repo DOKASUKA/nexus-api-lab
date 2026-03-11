@@ -2,6 +2,7 @@
   "policies": [
     {
       "name": "auth-workers",
+      "policyType": "set-headers-outbound", // これが必須！
       "handler": {
         "export": "SetHeadersOutboundPolicy",
         "module": "$import(@zuplo/runtime)",
