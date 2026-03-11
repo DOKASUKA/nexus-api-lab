@@ -14,7 +14,7 @@ npm run dev      # Local dev server (wrangler dev)
 npm run deploy   # Deploy to Cloudflare Workers
 ```
 
-### Zuplo Gateway (gateway/zuplo-gateway/)
+### Zuplo Gateway (repo root)
 
 ```bash
 npx @zuplo/cli build                                               # Validate locally
@@ -34,13 +34,12 @@ Internet → Zuplo Gateway (injects X-Shared-Secret header) → Cloudflare Worke
   - `summarize/` — POST, truncates input text to first 20 words
   - `translate/` — POST, word-level translation to Japanese/Spanish/French via hardcoded dictionary
 
-- **`gateway/zuplo-gateway/`** — Zuplo 6.x gateway project (managed-edge)
+- **`config/`** — Zuplo 6.x gateway config (managed-edge, project root)
   - `config/routes.oas.json` — OpenAPI 3.1 route definitions with Zuplo extensions; routes `/hello`, `/summarize`, `/translate` to their respective Workers
-  - `config/policies.json` — Defines the `auth-workers` policy using `SetHeadersOutboundPolicy` to inject `X-Shared-Secret: ${env.SHARED_SECRET_AUTH}` on outbound requests
-  - `modules/` — Custom TypeScript handlers (currently unused `upstreamProxy.ts`)
+  - `config/policies.json` — Defines the `auth-workers` policy using `SetHeadersOutboundPolicy` to inject `X-Nexus-Shared-Secret: ${env.SHARED_SECRET_AUTH}` on outbound requests
+- **`modules/`** — Custom TypeScript handlers (currently unused `upstreamProxy.ts`)
 
-- **`openapi/`** — Individual OpenAPI YAML specs per API
-- **`gateway/zuplo-gateway/openapi/openapi.yaml`** — Aggregated OpenAPI spec for the full gateway
+- **`openapi/`** — Individual OpenAPI YAML specs per API + `openapi.yaml` (aggregated gateway spec)
 
 ## Security Model
 

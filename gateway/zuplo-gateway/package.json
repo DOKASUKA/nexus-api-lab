@@ -1,7 +1,0 @@
-{
-  "name": "nexus-api-lab-gateway",
-  "private": true,
-  "dependencies": {
-    "@zuplo/runtime": "latest"
-  }
-}

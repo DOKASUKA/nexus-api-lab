@@ -5,7 +5,9 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'gateway/zuplo-gateway/**'
+      - 'config/**'
+      - 'modules/**'
+      - 'zuplo.jsonc'
       - 'apis/**'
       - '.github/workflows/deploy.yml'
 
@@ -13,10 +15,6 @@ jobs:
   # 1. Zuplo Gateway のデプロイ
   deploy-zuplo:
     runs-on: ubuntu-latest
-    # 共通のディレクトリ指定
-    defaults:
-      run:
-        working-directory: gateway/zuplo-gateway
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +23,7 @@ jobs:
         with:
           node-version: 24 # Node 20の警告対策として最新の24を指定
           cache: 'npm'
-          cache-dependency-path: gateway/zuplo-gateway/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm install
