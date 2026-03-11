@@ -102,3 +102,52 @@ Workers は各 `apis/*/tsconfig.json` で独立管理。ルートの `tsconfig.j
 
 ### 5. ログ取得
 `@zuplo/cli` v6.x に `logs` コマンドは**存在しない**。ログは Zuplo ポータルの **Logs** タブからのみ確認可能。
+
+## 新機能追加手順
+
+`apis/` に Worker を追加して Zuplo 経由で公開するまでの手順。**Worker を先にデプロイしてドメインを確定させてから** Zuplo のルートに追加する。
+
+### Step 1: `apis/<新機能名>/` を作成
+既存の Worker（例: `apis/hello/`）をコピーして流用する。必須ファイル:
+- `src/index.ts` — `X-Nexus-Shared-Secret` の検証実装を必ず含める
+- `wrangler.toml` — `name = "nexus-<新機能名>-api"` とする（これがドメインになる）
+- `package.json`, `tsconfig.json` — 既存からコピー
+
+### Step 2: `deploy.yml` の matrix に追加
+```yaml
+worker: [hello, summarize, translate, <新機能名>]
+```
+
+### Step 3: push → Worker を先にデプロイ
+Worker のデプロイが完了するとドメイン `nexus-<新機能名>-api.dokasukadon.workers.dev` が確定する。
+
+### Step 4: `config/routes.oas.json` にルートを追加
+```json
+"/<新機能名>": {
+  "x-zuplo-path": { "pathMode": "open-api" },
+  "<get|post>": {
+    "operationId": "<一意のID>",
+    "x-zuplo-policies": ["auth-workers"],
+    "x-zuplo-route": {
+      "handler": {
+        "export": "urlForwardHandler",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "baseUrl": "https://nexus-<新機能名>-api.dokasukadon.workers.dev"
+        }
+      }
+    },
+    "responses": { "200": { "description": "OK" } }
+  }
+}
+```
+
+### Step 5: ローカルビルドで確認して push
+```bash
+npx @zuplo/cli build   # Build succeeded を確認してから push
+```
+
+> **⚠️ やってはいけないこと**
+> - Worker デプロイ前に `routes.oas.json` に `baseUrl` を追加しない（ドメイン未確定）
+> - `x-zuplo-policies: ["auth-workers"]` を省略しない（省略すると Worker が常に 401）
+> - ルートの `tsconfig.json` を Worker 用に変更しない（Zuplo 専用設定が壊れる）
