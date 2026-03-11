@@ -3,11 +3,11 @@ name: Deploy API Ecosystem
 # mainブランチへのPush、かつ対象ディレクトリに変更があった時だけ実行
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'gateway/zuplo-gateway/**'
-      - 'apis/**'
-      - '.github/workflows/deploy.yml'
+      - "gateway/zuplo-gateway/**"
+      - "apis/**"
+      - ".github/workflows/deploy.yml"
 
 jobs:
   # 1. Zuplo Gateway のデプロイ
@@ -23,8 +23,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24 # Node 20の警告対策として最新の24を指定
-          cache: 'npm'
+          node-version: 22
+          cache: "npm"
           cache-dependency-path: gateway/zuplo-gateway/package-lock.json
 
       - name: Install dependencies
@@ -34,12 +34,7 @@ jobs:
         env:
           ZUPLO_API_KEY: ${{ secrets.ZUPLO_API_KEY }}
         run: |
-          # 1. サーバーへ送る前にローカル（CI環境）で設定ファイルをビルド・検証
-          # ここでエラーが出れば、サーバーにデプロイされる前に「どこが悪いか」が表示されます
-          npx @zuplo/cli build
-          
-          # 2. ビルド（検証）が成功した場合のみデプロイを実行
-          npx @zuplo/cli deploy --project nexus-api-lab --api-key $ZUPLO_API_KEY
+          npx zuplo deploy --project nexus-api-lab
 
   # 2. Cloudflare Workers のデプロイ (3つ同時に実行)
   deploy-workers:
