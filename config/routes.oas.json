@@ -23,7 +23,7 @@
             }
           }
         },
-        "responses": { "200": { "description": "OK" } }
+        "responses": { "200": { "description": "It is OK." } }
       }
     },
     "/summarize": {
