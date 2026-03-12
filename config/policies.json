@@ -1,20 +1,20 @@
-{
-  "policies": [
-    {
-      "name": "auth-workers",
-      "policyType": "set-headers-outbound",
-      "handler": {
-        "export": "SetHeadersOutboundPolicy",
-        "module": "$import(@zuplo/runtime)",
-        "options": {
-          "headers": [
-            {
-              "name": "X-Nexus-Shared-Secret",
-              "value": "${env.SHARED_SECRET_AUTH}"
-            }
-          ]
-        }
+{                                                                                                                                  "policies": [
+  {                                                                                                                          
+    "name": "auth-workers",
+    "policyType": "set-headers-inbound",
+    "handler": {
+      "export": "SetHeadersInboundPolicy",
+      "module": "$import(@zuplo/runtime)",
+      "options": {
+        "headers": [
+          {
+            "name": "x-nexus-shared-secret",
+            "value": "$env(NEXUS_SHARED_SECRET)",
+            "overwrite": true
+          }
+        ]
       }
     }
-  ]
+  }
+]
 }
