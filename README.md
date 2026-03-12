@@ -12,7 +12,7 @@ We specialize in providing "Infrastructure as a Service" (IaaS) through lightwei
 
 ## Zuplo Gateway
 
-The Zuplo API Gateway project root is located at:
+The Zuplo API Gateway project root is located at: 
 
 ```
 gateway/zuplo-gateway/
