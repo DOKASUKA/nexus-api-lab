@@ -90,6 +90,8 @@ Workers は各 `apis/*/tsconfig.json` で独立管理。ルートの `tsconfig.j
 
 両者の値は同一にする。
 
+> **⚠️ `SHARED_SECRET_AUTH` が Zuplo ポータルの Environment Variables に未設定の場合、全リクエストが 401 Unauthorized になる。** 新環境セットアップ時は必ず最初に設定すること。
+
 ### 4. ポリシー形式（Zuplo 6.x）
 `SetHeadersOutboundPolicy` を使う。旧形式（`upstream` 等）は動作しない。
 

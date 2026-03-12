@@ -4,6 +4,9 @@
     "title": "Nexus API Gateway",
     "version": "1.0.0"
   },
+  "servers": [
+    { "url": "https://api.nexus-api-lab.com" }
+  ],
   "paths": {
     "/hello": {
       "x-zuplo-path": { "pathMode": "open-api" },
