@@ -94,11 +94,20 @@ Workers は各 `apis/*/tsconfig.json` で独立管理。ルートの `tsconfig.j
 
 ### 4. ポリシー形式（Zuplo 6.x）
 `SetHeadersOutboundPolicy` を使う。旧形式（`upstream` 等）は動作しない。
+`options.headers` は**配列形式**（`name`/`value` オブジェクト）で記述する。オブジェクト形式（キー: 値）は誤り。
 
 ```json
 {
   "export": "SetHeadersOutboundPolicy",
-  "module": "$import(@zuplo/runtime)"
+  "module": "$import(@zuplo/runtime)",
+  "options": {
+    "headers": [
+      {
+        "name": "X-Nexus-Shared-Secret",
+        "value": "${env.SHARED_SECRET_AUTH}"
+      }
+    ]
+  }
 }
 ```
 
