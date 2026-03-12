@@ -7,9 +7,12 @@
         "export": "SetHeadersOutboundPolicy",
         "module": "$import(@zuplo/runtime)",
         "options": {
-          "headers": {
-            "X-Nexus-Shared-Secret": "${env.SHARED_SECRET_AUTH}"
-          }
+          "headers": [
+            {
+              "name": "X-Nexus-Shared-Secret",
+              "value": "${env.SHARED_SECRET_AUTH}"
+            }
+          ]
         }
       }
     }
