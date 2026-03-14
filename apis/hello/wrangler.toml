@@ -16,4 +16,4 @@ bindings = [
 
 [[migrations]]
 tag = "v1"
-new_classes = ["QuotaCounter"]
+new_sqlite_classes = ["QuotaCounter"]
