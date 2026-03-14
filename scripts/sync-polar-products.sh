@@ -28,11 +28,14 @@ PLANS=(
 
 # ── Fetch existing products ──────────────────────────────────────────────────
 echo "Fetching existing Polar products..."
-EXISTING_JSON=$(curl -s -X GET \
+HTTP_CODE=$(curl -s -o /tmp/polar_existing.json -w "%{http_code}" \
   "${BASE_URL}/products?organization_id=${POLAR_ORG_ID}&limit=100" \
-  -H "Authorization: Bearer ${POLAR_ACCESS_TOKEN}" \
-  -H "Content-Type: application/json" \
-  --fail-with-body 2>&1) || { echo "❌ Failed to fetch Polar products: ${EXISTING_JSON}"; exit 1; }
+  -H "Authorization: Bearer ${POLAR_ACCESS_TOKEN}")
+if [[ "$HTTP_CODE" != "200" ]]; then
+  echo "❌ Polar API returned HTTP ${HTTP_CODE}: $(cat /tmp/polar_existing.json)"
+  exit 1
+fi
+EXISTING_JSON=$(cat /tmp/polar_existing.json)
 
 # ── Process each plan ────────────────────────────────────────────────────────
 for PLAN_DEF in "${PLANS[@]}"; do

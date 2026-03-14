@@ -35,6 +35,7 @@ jobs:
   sync-polar-products:
     runs-on: ubuntu-latest
     needs: pre-deploy-check
+    continue-on-error: true  # Products already exist; sync failure should not block deploy
     steps:
       - uses: actions/checkout@v4
 
