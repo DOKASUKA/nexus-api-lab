@@ -1,51 +1,56 @@
-name: Deploy API Ecosystem
+name: Deploy Workers
 
-# mainブランチへのPush、かつ対象ディレクトリに変更があった時だけ実行
 on:
   push:
-    branches: [ main ]
-    paths:
-      - 'config/**'
-      - 'modules/**'
-      - 'zuplo.jsonc'
-      - 'apis/**'
-      - '.github/workflows/deploy.yml'
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  # 1. Zuplo Gateway のデプロイ
-  deploy-zuplo:
+  # ── Safety gate: catch debug endpoints and hardcoded secrets ──────────────
+  pre-deploy-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24 # Node 20の警告対策として最新の24を指定
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Zuplo Build & Deploy
-        env:
-          ZUPLO_API_KEY: ${{ secrets.ZUPLO_API_KEY }}
+      - name: Check for debug/reset endpoints
         run: |
-          # 1. サーバーへ送る前にローカル（CI環境）で設定ファイルをビルド・検証
-          # ここでエラーが出れば、サーバーにデプロイされる前に「どこが悪いか」が表示されます
-          npx @zuplo/cli build
-          
-          # 2. ビルド（検証）が成功した場合のみデプロイを実行
-          npx @zuplo/cli deploy --project nexus-api-lab --api-key $ZUPLO_API_KEY
+          if grep -r '"/reset"' apis/; then
+            echo "❌ Debug /reset endpoint found in source. Remove before deploying."
+            exit 1
+          fi
+          echo "✅ No debug endpoints found"
 
-  # 2. Cloudflare Workers のデプロイ (3つ同時に実行)
-  deploy-workers:
+      - name: Check for hardcoded secrets
+        run: |
+          # Detect patterns that look like hardcoded tokens (hex 32+, Bearer strings, sk_ prefixes)
+          if grep -rE '(POLAR_ACCESS_TOKEN|CLOUDFLARE_API_TOKEN)\s*=\s*"[^$\{]' apis/ ||
+             grep -rE '"(sk_|pk_|tok_)[a-zA-Z0-9_]{16,}"' apis/ ||
+             grep -rE 'Authorization.*Bearer [a-zA-Z0-9_\-]{32,}' apis/; then
+            echo "❌ Possible hardcoded secret detected in source. Use env vars instead."
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets found"
+
+  # ── Sync Polar products (idempotent) ──────────────────────────────────────
+  sync-polar-products:
     runs-on: ubuntu-latest
+    needs: pre-deploy-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync Polar products
+        env:
+          POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
+          POLAR_ORG_ID: ${{ secrets.POLAR_ORG_ID }}
+        run: bash scripts/sync-polar-products.sh
+
+  # ── Deploy Workers ────────────────────────────────────────────────────────
+  deploy:
+    runs-on: ubuntu-latest
+    needs: pre-deploy-check
     strategy:
       matrix:
-        # フォルダ名を配列で定義
-        worker: [hello, summarize, translate]
+        api: [hello, summarize, translate]
     steps:
       - uses: actions/checkout@v4
 
@@ -53,4 +58,13 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: "apis/${{ matrix.worker }}"
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apis/${{ matrix.api }}
+          secrets: |
+            ZUPLO_SHARED_SECRET
+            POLAR_ACCESS_TOKEN
+            POLAR_ORG_ID
+        env:
+          ZUPLO_SHARED_SECRET: ${{ secrets.ZUPLO_SHARED_SECRET }}
+          POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
+          POLAR_ORG_ID: ${{ secrets.POLAR_ORG_ID }}
