@@ -28,7 +28,7 @@ PLANS=(
 
 # ── Fetch existing products ──────────────────────────────────────────────────
 echo "Fetching existing Polar products..."
-HTTP_CODE=$(curl -s -o /tmp/polar_existing.json -w "%{http_code}" \
+HTTP_CODE=$(curl -sL -o /tmp/polar_existing.json -w "%{http_code}" \
   "${BASE_URL}/products?organization_id=${POLAR_ORG_ID}&limit=100" \
   -H "Authorization: Bearer ${POLAR_ACCESS_TOKEN}")
 if [[ "$HTTP_CODE" != "200" ]]; then
