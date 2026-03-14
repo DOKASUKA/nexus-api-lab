@@ -37,14 +37,13 @@ EXISTING_JSON=$(curl -sf -X GET \
 for PLAN_DEF in "${PLANS[@]}"; do
   IFS=':' read -r NAME PRICE_CENTS QUOTA <<< "$PLAN_DEF"
 
-  EXISTS=$(python3 - <<EOF
+  EXISTS=$(echo "$EXISTING_JSON" | python3 -c "
 import sys, json
-data = ${EXISTING_JSON}
+data = json.load(sys.stdin)
 items = data.get('items', data.get('result', []))
 found = any(p['name'] == '${NAME}' for p in items if not p.get('is_archived', False))
 print('true' if found else 'false')
-EOF
-)
+")
 
   if [[ "$EXISTS" == "true" ]]; then
     echo "[SKIP] ${NAME} already exists"
@@ -52,7 +51,8 @@ EOF
   fi
 
   if [[ "$DRY_RUN" == "true" ]]; then
-    echo "[DRY-RUN CREATE] ${NAME} — \$$(python3 -c "print(${PRICE_CENTS}/100)")/month — ${QUOTA} req/month"
+    PRICE_USD=$(python3 -c "print('%.2f' % (${PRICE_CENTS}/100))")
+    echo "[DRY-RUN CREATE] ${NAME} — \$${PRICE_USD}/month — ${QUOTA} req/month"
     continue
   fi
 

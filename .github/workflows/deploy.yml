@@ -61,10 +61,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apis/${{ matrix.api }}
           secrets: |
-            ZUPLO_SHARED_SECRET
             POLAR_ACCESS_TOKEN
             POLAR_ORG_ID
         env:
-          ZUPLO_SHARED_SECRET: ${{ secrets.ZUPLO_SHARED_SECRET }}
           POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
           POLAR_ORG_ID: ${{ secrets.POLAR_ORG_ID }}
