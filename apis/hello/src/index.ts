@@ -2,6 +2,7 @@ export interface Env {
   // Polar auth (new path)
   POLAR_ACCESS_TOKEN: string;
   POLAR_ORG_ID: string;
+  POLAR_WEBHOOK_SECRET: string;
   LICENSE_CACHE: KVNamespace;
   QUOTA_COUNTER: DurableObjectNamespace;
   QUOTA_LIMIT_DEFAULT: string;
@@ -105,10 +106,123 @@ export class QuotaCounter {
   }
 }
 
+// ─── Webhook signature verification ───────────────────────────────────────────
+
+async function verifyWebhookSignature(
+  body: string,
+  signature: string,
+  secret: string
+): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const keyBuffer = encoder.encode(secret);
+  const msgBuffer = encoder.encode(body);
+
+  const key = await crypto.subtle.importKey("raw", keyBuffer, { name: "HMAC", hash: "SHA-256" }, false, [
+    "sign",
+  ]);
+  const signatureBuffer = await crypto.subtle.sign("HMAC", key, msgBuffer);
+  const computedSignature = Array.from(new Uint8Array(signatureBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  return computedSignature === signature.toLowerCase();
+}
+
+interface PolarWebhookPayload {
+  type: string;
+  data: {
+    id: string;
+    license_key?: {
+      key: string;
+      status: string;
+      limit_usage?: number;
+    };
+    [key: string]: unknown;
+  };
+}
+
 // ─── Main fetch handler ───────────────────────────────────────────────────────
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+
+    // ── POST /webhooks/polar: Webhook receiver ──
+    if (request.method === "POST" && url.pathname === "/webhooks/polar") {
+      const signature = request.headers.get("X-Polar-Signature");
+      if (!signature) {
+        return Response.json({ error: "Missing signature" }, { status: 400 });
+      }
+
+      const body = await request.text();
+      const isValid = await verifyWebhookSignature(body, signature, env.POLAR_WEBHOOK_SECRET);
+
+      if (!isValid) {
+        return Response.json({ error: "Invalid signature" }, { status: 401 });
+      }
+
+      let payload: PolarWebhookPayload;
+      try {
+        payload = JSON.parse(body);
+      } catch {
+        return Response.json({ error: "Invalid JSON" }, { status: 400 });
+      }
+
+      // Process order.created event
+      if (payload.type === "order.created" && payload.data.license_key) {
+        const licenseKey = payload.data.license_key.key;
+        const cacheData = {
+          status: payload.data.license_key.status,
+          quota_limit: payload.data.license_key.limit_usage ?? 1000,
+          cached_at: Date.now(),
+        };
+        await env.LICENSE_CACHE.put(`license:${licenseKey}`, JSON.stringify(cacheData), {
+          expirationTtl: 3600,
+        });
+        return Response.json({ status: "ok" });
+      }
+
+      return Response.json({ status: "ok" });
+    }
+
+    // ── GET /success: Purchase success page ──
+    if (request.method === "GET" && url.pathname === "/success") {
+      const checkoutId = url.searchParams.get("id");
+      const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Successful</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 100px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+    h1 { color: #333; margin: 0 0 20px 0; }
+    .checkmark { font-size: 60px; color: #4CAF50; margin: 20px 0; }
+    p { color: #666; font-size: 16px; line-height: 1.6; }
+    .checkout-id { font-family: monospace; background: #f0f0f0; padding: 10px; border-radius: 4px; margin: 20px 0; }
+    a { display: inline-block; margin-top: 20px; padding: 12px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="checkmark">✓</div>
+    <h1>Purchase Successful!</h1>
+    <p>Thank you for your purchase. Your API license key will be sent to your email shortly.</p>
+    ${checkoutId ? `<div class="checkout-id">Checkout ID: ${checkoutId}</div>` : ""}
+    <p>You can now use your license key to access the API.</p>
+    <a href="https://api.nexus-api-lab.com/hello">Return to API</a>
+  </div>
+</body>
+</html>
+      `;
+      return new Response(html, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
+
+    // ── GET / or GET /hello: API endpoint (existing auth logic) ──
     const authHeader = request.headers.get("Authorization");
     const sharedSecret = request.headers.get("X-Nexus-Shared-Secret");
 
